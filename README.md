@@ -1,4 +1,4 @@
-# TaskNote API
+# GusNote API
 
 Sistema de gestión de tareas con notas integradas - API RESTful con Node.js y PostgreSQL.
 
