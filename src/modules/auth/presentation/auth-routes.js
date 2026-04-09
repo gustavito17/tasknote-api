@@ -89,6 +89,8 @@ router.post('/login', validate(loginValidator), authController.login);
  *       401:
  *         description: No autenticado
  */
+router.post('/google', authController.googleLogin);
+
 router.get('/me', authenticateToken, authController.getCurrentUser);
 
 module.exports = router;
