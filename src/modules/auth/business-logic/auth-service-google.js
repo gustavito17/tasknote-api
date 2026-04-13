@@ -19,7 +19,8 @@ class AuthServiceGoogle {
     const { data: { user: supabaseUser }, error } = await supabaseAdmin.auth.getUser(supabaseAccessToken);
 
     if (error || !supabaseUser) {
-      throw new ApiError('Token de Google inválido', 401);
+      console.error('[Google Auth] supabase.auth.getUser error:', error?.message ?? 'no user returned');
+      throw new ApiError(`Token de Google inválido: ${error?.message ?? 'no user'}`, 401);
     }
 
     const email = supabaseUser.email;
@@ -51,8 +52,8 @@ class AuthServiceGoogle {
     // 4. Emitir nuestro JWT propio
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      config.secret,
-      { expiresIn: config.expiresIn }
+      config.jwtSecret,
+      { expiresIn: config.jwtExpiresIn }
     );
 
     return {
