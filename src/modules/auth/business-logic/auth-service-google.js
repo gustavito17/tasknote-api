@@ -35,18 +35,23 @@ class AuthServiceGoogle {
     let user = await authRepository.findUserByEmail(email);
 
     if (!user) {
-      // 3. Crear nuevo usuario (sin password_hash — solo Google)
+      // 3. Crear nuevo usuario (Google-only: password_hash marcado como inutilizable)
       let finalUsername = username;
       const existing = await authRepository.findUserByUsername(username);
       if (existing) {
         finalUsername = `${username}_${Date.now().toString(36)}`;
       }
 
-      user = await authRepository.createUser({
-        username: finalUsername,
-        email,
-        password_hash: null,
-      });
+      try {
+        user = await authRepository.createUser({
+          username: finalUsername,
+          email,
+          password_hash: 'GOOGLE_OAUTH',
+        });
+      } catch (createErr) {
+        console.error('[Google Auth] createUser error:', createErr?.message ?? createErr);
+        throw new ApiError(`Error al crear usuario: ${createErr?.message ?? 'unknown'}`, 500);
+      }
     }
 
     // 4. Emitir nuestro JWT propio
